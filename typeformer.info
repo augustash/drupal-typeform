@@ -1,0 +1,11 @@
+name = Typeformer
+description = Embed your Typeform URLs inside your site domain.
+package = Webform
+core = 7.x
+
+dependencies[] = menu
+dependencies[] = node
+dependencies[] = text
+
+files[] = typeformer.module
+files[] = typeformer.install

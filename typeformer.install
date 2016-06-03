@@ -1,0 +1,167 @@
+<?php
+/**
+ * @file
+ * typeformer.install
+ */
+
+/**
+ * Implements hook_install().
+ */
+function typeformer_install() {
+  // ensure content-types are built
+  node_types_rebuild();
+
+  // add custom fields & field instances
+  foreach (_typeformer_fields() as $field) {
+    field_create_field($field);
+  }
+  foreach (_typeformer_field_instances() as $fieldinstance) {
+    field_create_instance($fieldinstance);
+  }
+
+  // settings
+  variable_set('pathauto_node_typeformer_pattern', 'form/[node:title]');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function typeformer_uninstall() {
+  // select all typeform nodes
+  $customType = 'typeform';
+  $results = db_select('node', 'n')
+    ->fields('n', array('nid'))
+    ->condition('type', $customType, '=')
+    ->execute()
+    ->fetchAll();
+
+  $nids = array();
+  foreach ($results as $row) {
+      $nids[] = $row->nid;
+  }
+
+  // remove existing nodes, fields, and field instances
+  node_delete_multiple($nids);
+  remove_custom_fields();
+  node_type_delete($customType);
+  field_purge_batch(1000);
+
+  // remove settings
+  variable_del('pathauto_node_typeformer_pattern');
+}
+
+/**
+ * When uninstalling, remove the "typeform" content type custom fields and field
+ * instances.
+ *
+ * @return  void
+ */
+function remove_custom_fields() {
+  $instances = field_info_instances('node', 'typeform');
+  foreach ($instances as $instance_name => $fieldinstance) {
+    field_delete_instance($fieldinstance);
+  }
+
+  foreach (array_keys(_typeformer_fields()) as $field) {
+    field_delete_field($field);
+  }
+}
+
+/**
+ * Generates base fields.
+ *
+ * @return  array
+ */
+function _typeformer_fields() {
+  $fields = array();
+
+  // Exported 'field_typeform_url'
+  $fields['field_typeform_url'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_typeform_url',
+    'foreign keys' => array(
+      'format' => array(
+        'columns' => array(
+          'format' => 'format',
+        ),
+        'table' => 'filter_format',
+      ),
+    ),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+    ),
+    'translatable' => 0,
+    'type' => 'text',
+  );
+
+  return $fields;
+}
+
+/**
+ * Generates field instances.
+ */
+function _typeformer_field_instances() {
+  $field_instances = array();
+
+  // Exported: 'node-typeform-field_typeform_url'
+  $field_instances['node-typeform-field_typeform_url'] = array(
+    'bundle' => 'typeform',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_typeform_url',
+    'label' => 'Typeform URL',
+    'required' => 1,
+    'settings' => array(
+      'linkit' => array(
+        'button_text' => 'Search',
+        'enable' => 0,
+        'profile' => '',
+      ),
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'show_token_tree' => 0,
+        'size' => 80,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
+    ),
+  );
+
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Typeform URL');
+
+  return $field_instances;
+}

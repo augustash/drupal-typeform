@@ -1,0 +1,22 @@
+<?php
+/**
+ * @file
+ * typeformer.module
+ */
+
+/**
+ * Implements hook_node_info().
+ */
+function typeformer_node_info() {
+  $items = array(
+    'typeform' => array(
+      'base' => 'node_content',
+      'name' => t('Typeform'),
+      'description' => t('Embed your Typeform URLs inside your site domain.'),
+      'title_label' => t('Page Title'),
+      'has_title' => TRUE,
+    ),
+  );
+  return $items;
+}
+
