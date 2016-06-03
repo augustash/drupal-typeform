@@ -1,0 +1,13 @@
+{
+    "name": "drupal/typeformer",
+    "description": "Embed your Typeform URLs inside your site domain.",
+    "type": "drupal-module",
+    "license": "GPL-2.0+",
+	"homepage": "https://drupal.org/project/typeformer",
+	"authors": [{
+		"name": "Peter McWilliams (petemcw)",
+		"homepage": "https://www.drupal.org/u/petemcw",
+		"role": "Maintainer"
+    }]
+}
+
